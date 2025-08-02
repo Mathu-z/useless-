@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Rage</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#ff0080',
+                        secondary: '#00ffff'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Orbitron', monospace;
+            overflow: hidden;
+        }
+        
+        .neon-glow {
+            text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor, 0 0 20px currentColor;
+        }
+        
+        .scanlines {
+            background: linear-gradient(transparent 50%, rgba(0, 255, 255, 0.03) 50%);
+            background-size: 100% 4px;
+            animation: scanlines 0.1s linear infinite;
+        }
+        
+        @keyframes scanlines {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 4px; }
+        }
+        
+        .screen-shake {
+            animation: shake 0.2s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-2px, -2px); }
+            20% { transform: translate(2px, -2px); }
+            30% { transform: translate(-2px, 2px); }
+            40% { transform: translate(2px, 2px); }
+            50% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, -2px); }
+            70% { transform: translate(-2px, 2px); }
+            80% { transform: translate(2px, 2px); }
+            90% { transform: translate(-2px, -2px); }
+        }
+        
+        .explosion {
+            position: absolute;
+            pointer-events: none;
+            animation: explode 0.6s ease-out forwards;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .emoji-drop {
+            position: absolute;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: drop 3s linear forwards;
+        }
+        
+        @keyframes drop {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .glitch {
+            animation: glitch 0.5s ease-in-out infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% {
+                transform: translate(0);
+                filter: hue-rotate(0deg);
+            }
+            10% {
+                transform: translate(-2px, 2px);
+                filter: hue-rotate(90deg);
+            }
+            20% {
+                transform: translate(2px, -2px);
+                filter: hue-rotate(180deg);
+            }
+            30% {
+                transform: translate(-2px, -2px);
+                filter: hue-rotate(270deg);
+            }
+            40% {
+                transform: translate(2px, 2px);
+                filter: hue-rotate(360deg);
+            }
+            50% {
+                transform: translate(-2px, 2px);
+                filter: hue-rotate(90deg);
+            }
+            60% {
+                transform: translate(2px, -2px);
+                filter: hue-rotate(180deg);
+            }
+            70% {
+                transform: translate(-2px, -2px);
+                filter: hue-rotate(270deg);
+            }
+            80% {
+                transform: translate(2px, 2px);
+                filter: hue-rotate(360deg);
+            }
+            90% {
+                transform: translate(-2px, 2px);
+                filter: hue-rotate(90deg);
+            }
+        }
+        
+        .comic-effect {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: 900;
+            pointer-events: none;
+            animation: comic 1s ease-out forwards;
+            text-stroke: 2px #000;
+            -webkit-text-stroke: 2px #000;
+        }
+        
+        @keyframes comic {
+            0% {
+                transform: scale(0) rotate(-10deg);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2) rotate(5deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+        
+        .color-flash {
+            animation: colorFlash 0.3s ease-in-out;
+        }
+        
+        @keyframes colorFlash {
+            0%, 100% { background-color: #000; }
+            25% { background-color: #ff0080; }
+            50% { background-color: #00ffff; }
+            75% { background-color: #00ff00; }
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen flex items-center justify-center relative overflow-hidden">
+    <div class="scanlines absolute inset-0 pointer-events-none"></div>
+    
+    <div id="gameContainer" class="relative w-full h-screen flex flex-col items-center justify-center">
+        <div class="text-center z-10">
+            <h1 id="mainTitle" class="text-8xl font-black neon-glow text-primary mb-8 tracking-wider">
+                KEYBOARD RAGE
+            </h1>
+            <p id="instruction" class="text-2xl text-secondary neon-glow mb-4">
+                Press any key to unleash chaos!
+            </p>
+            <div id="keyDisplay" class="text-4xl font-bold text-yellow-400 neon-glow min-h-16 flex items-center justify-center">
+                Waiting for input...
+            </div>
+        </div>
+        
+        <div id="escapeMessage" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90 hidden z-50">
+            <div class="text-center">
+                <h2 class="text-6xl font-black text-red-500 neon-glow glitch mb-4">
+                    THERE'S NO ESCAPE 😈
+                </h2>
+                <p class="text-2xl text-white neon-glow">
+                    The chaos continues forever...
+                </p>
+            </div>
+        </div>
+        
+        <div id="effectsContainer" class="absolute inset-0 pointer-events-none"></div>
+    </div>
+
+    <script id="keyboardHandler">
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameContainer = document.getElementById('gameContainer');
+            const mainTitle = document.getElementById('mainTitle');
+            const keyDisplay = document.getElementById('keyDisplay');
+            const escapeMessage = document.getElementById('escapeMessage');
+            const effectsContainer = document.getElementById('effectsContainer');
+            
+            const colors = ['#ff0080', '#00ffff', '#00ff00', '#ffff00', '#ff4500', '#9400d3'];
+            const comicEffects = ['POW!', 'BAM!', 'BOOM!', 'ZAP!', 'CRASH!', 'BANG!'];
+            const emojis = ['💥', '🔥', '⚡', '💫', '🌟', '✨', '🎆', '🎇', '💀', '👹', '🤖', '👾'];
+            
+            let escapeTimeout;
+            
+            function getRandomColor() {
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            function createExplosion(x, y) {
+                const explosion = document.createElement('div');
+                explosion.className = 'explosion';
+                explosion.style.left = x + 'px';
+                explosion.style.top = y + 'px';
+                explosion.style.color = getRandomColor();
+                explosion.innerHTML = '💥';
+                explosion.style.fontSize = '4rem';
+                effectsContainer.appendChild(explosion);
+                
+                setTimeout(() => {
+                    if (explosion.parentNode) {
+                        explosion.parentNode.removeChild(explosion);
+                    }
+                }, 600);
+            }
+            
+            function createComicEffect() {
+                const effect = document.createElement('div');
+                effect.className = 'comic-effect';
+                effect.style.left = Math.random() * (window.innerWidth - 200) + 'px';
+                effect.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+                effect.style.color = getRandomColor();
+                effect.textContent = comicEffects[Math.floor(Math.random() * comicEffects.length)];
+                effectsContainer.appendChild(effect);
+                
+                setTimeout(() => {
+                    if (effect.parentNode) {
+                        effect.parentNode.removeChild(effect);
+                    }
+                }, 1000);
+            }
+            
+            function dropEmoji() {
+                const emoji = document.createElement('div');
+                emoji.className = 'emoji-drop';
+                emoji.style.left = Math.random() * window.innerWidth + 'px';
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                effectsContainer.appendChild(emoji);
+                
+                setTimeout(() => {
+                    if (emoji.parentNode) {
+                        emoji.parentNode.removeChild(emoji);
+                    }
+                }, 3000);
+            }
+            
+            function screenShake() {
+                gameContainer.classList.add('screen-shake');
+                setTimeout(() => {
+                    gameContainer.classList.remove('screen-shake');
+                }, 200);
+            }
+            
+            function colorFlash() {
+                document.body.classList.add('color-flash');
+                setTimeout(() => {
+                    document.body.classList.remove('color-flash');
+                }, 300);
+            }
+            
+            function showEscapeMessage() {
+                escapeMessage.classList.remove('hidden');
+                clearTimeout(escapeTimeout);
+                escapeTimeout = setTimeout(() => {
+                    escapeMessage.classList.add('hidden');
+                }, 3000);
+            }
+            
+            document.addEventListener('keydown', function(event) {
+                event.preventDefault();
+                
+                if (event.key === 'Escape') {
+                    showEscapeMessage();
+                    screenShake();
+                    colorFlash();
+                    createExplosion(window.innerWidth / 2, window.innerHeight / 2);
+                    return;
+                }
+                
+                screenShake();
+                
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
+                createExplosion(x, y);
+                
+                createComicEffect();
+                
+                if (event.code === 'Space') {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => dropEmoji(), i * 100);
+                    }
+                    keyDisplay.textContent = 'SPACEBAR EMOJI RAIN!';
+                } else {
+                    keyDisplay.textContent = `Key: ${event.key.toUpperCase()}`;
+                }
+                
+                keyDisplay.style.color = getRandomColor();
+                mainTitle.style.color = getRandomColor();
+                
+                if (Math.random() > 0.7) {
+                    colorFlash();
+                }
+            });
+        });
+    </script>
+
+    <script id="soundEffects">
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            function createBeep(frequency, duration, type = 'square') {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = frequency;
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration);
+            }
+            
+            document.addEventListener('keydown', function(event) {
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
+                if (event.key === 'Escape') {
+                    createBeep(150, 0.5, 'sawtooth');
+                    setTimeout(() => createBeep(100, 0.3, 'sawtooth'), 200);
+                } else if (event.code === 'Space') {
+                    createBeep(800, 0.1, 'sine');
+                } else {
+                    const frequency = 200 + Math.random() * 600;
+                    createBeep(frequency, 0.1);
+                }
+            });
+        });
+    </script>
+
+    <script id="particleSystem">
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.createElement('canvas');
+            canvas.style.position = 'absolute';
+            canvas.style.top = '0';
+            canvas.style.left = '0';
+            canvas.style.pointerEvents = 'none';
+            canvas.style.zIndex = '1';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.body.appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+            
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.vx = (Math.random() - 0.5) * 10;
+                    this.vy = (Math.random() - 0.5) * 10;
+                    this.life = 1;
+                    this.decay = Math.random() * 0.02 + 0.01;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.size = Math.random() * 5 + 2;
+                }
+                
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.life -= this.decay;
+                    this.size *= 0.98;
+                }
+                
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.life;
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+            
+            function addParticles(x, y, count = 10) {
+                for (let i = 0; i < count; i++) {
+                    particles.push(new Particle(x, y));
+                }
+            }
+            
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const particle = particles[i];
+                    particle.update();
+                    particle.draw();
+                    
+                    if (particle.life <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            animate();
+            
+            document.addEventListener('keydown', function(event) {
+                if (event.key !== 'Escape') {
+                    const x = Math.random() * window.innerWidth;
+                    const y = Math.random() * window.innerHeight;
+                    addParticles(x, y, 15);
+                }
+            });
+            
+            window.addEventListener('resize', function() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        });
+    </script>
+</body>
+</html>
